@@ -36,8 +36,15 @@
 }
 
 .secondary {
-  background-color: var(--color-accent);
+  background-color: #000;
+  border: 1px solid #FFF;
   color: var(--color-text);
+}
+
+.tertiary {
+  background-color: #FFF;
+  color: var(--color-brand);
+  border: 1px solid var(--color-brand);
 }
 
 @keyframes spin {

@@ -16,10 +16,41 @@ function App() {
   const { fields, handleChange, resetFields } = useForm();
   const [error, setError] = React.useState<undefined | string>(undefined);
   const [addresses, setAddresses] = React.useState<AddressType[]>([]);
+  const [loading, setLoading] = React.useState(false);
   const { addAddress } = useAddressBook();
+
+  const handleClearAll = () => {
+    resetFields();
+    setAddresses([]);
+    setError(undefined);
+  };
 
   const handleAddressSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(undefined);
+    setAddresses([]);
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        `/api/getAddresses?postcode=${fields.postCode}&streetnumber=${fields.houseNumber}`
+      );
+      const data = await response.json();
+
+      if (data.status === "error") {
+        setError(data.errormessage);
+        return;
+      }
+
+      setAddresses(data.details.map((address: AddressType) => ({
+        ...address,
+        id: `${address.postcode}-${address.street}-${address.houseNumber}`
+      })));
+    } catch (err) {
+      setError("Failed to fetch addresses");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePersonSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
@@ -73,7 +104,7 @@ function App() {
                 placeholder="House number"
               />
             </div>
-            <Button type="submit">Find</Button>
+            <Button type="submit" loading={loading}>Find</Button>
           </fieldset>
         </form>
         {addresses.length > 0 &&
@@ -113,6 +144,9 @@ function App() {
             </fieldset>
           </form>
         )}
+        <Button type="button" variant="tertiary" onClick={handleClearAll}>
+          Clear all fields
+        </Button>
 
         {error && <div className="error">{error}</div>}
       </Section>

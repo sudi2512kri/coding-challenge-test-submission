@@ -23,7 +23,8 @@ const Button: FunctionComponent<ButtonProps> = ({
     <button
       className={cx($.button, {
         [$.primary]: variant === 'primary',
-        [$.secondary]: variant === 'secondary'
+        [$.secondary]: variant === 'secondary',
+        [$.tertiary]: variant === 'tertiary'
       })}
       type={type}
       onClick={onClick}
